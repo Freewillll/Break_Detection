@@ -1,11 +1,11 @@
 
 TEMPLATE	= lib
 CONFIG	+= qt plugin warn_off
-QT += widgets
+QMAKE_CXXFLAGS += -std=c++0x
 #CONFIG	+= x86_64
-VAA3DPATH = D:/Vaa3d_QT6/v3d_external
+VAA3DPATH = /home/freewill/Vaa3d/v3d_external
 INCLUDEPATH	+= $$VAA3DPATH/v3d_main/basic_c_fun
-VAA3DRELEASE = D:/Vaa3D_v6.3.0
+
 
 
 win32 {
@@ -19,7 +19,7 @@ win32 {
 }
 
 unix:!macx {
-    LIBS += -L$$VAA3DPATH/v3d_main/common_lib/lib_ubuntu -lv3dtiff
+    LIBS += -L$$VAA3DPATH/v3d_main/common_lib/lib -ltiff
     LIBS += -L$$VAA3DPATH/v3d_main/jba/c++ -lv3dnewmat
     QMAKE_CXXFLAGS += -fopenmp
     LIBS += -fopenmp
@@ -36,4 +36,4 @@ SOURCES += $$VAA3DPATH/v3d_main/basic_c_fun/basic_surf_objs.cpp
 
 
 TARGET	= $$qtLibraryTarget(Break_Detection)
-DESTDIR	= $$VAA3DRELEASE/plugins/Break_Detection/
+DESTDIR	= $$VAA3DPATH/bin/plugins/Break_Detection/

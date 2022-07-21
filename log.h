@@ -2,13 +2,13 @@
 #define LOG_H
 
 #include <iostream>
-#include <QtMessageHandler>
+#include <QtMsgHandler>
 #include <QMutex>
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
 
-void messageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void messageOutput(QtMsgType type, const char *msg)
 {
     static QMutex mutex;
     mutex.lock();

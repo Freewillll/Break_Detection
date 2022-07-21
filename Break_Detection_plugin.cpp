@@ -10,7 +10,7 @@
 #include "help_func.h"
 #include "basic_surf_objs.h"
 using namespace std;
- 
+Q_EXPORT_PLUGIN2(Break_Detection, Break_Detection); 
 QStringList Break_Detection::menulist() const
 {
 	return QStringList() 
@@ -50,7 +50,7 @@ bool Break_Detection::dofunc(const QString & func_name, const V3DPluginArgList &
 	if(input.size() >= 1) infiles = *((vector<char*> *)input.at(0).p);
 	if(input.size() >= 2) inparas = *((vector<char*> *)input.at(1).p);
 	if(output.size() >= 1) outfiles = *((vector<char*> *)output.at(0).p);
-    qInstallMessageHandler(messageOutput);
+    qInstallMsgHandler(messageOutput);
     QString curPath = QDir::currentPath();
     QString qDebugfilePath = curPath.append("/qDebug.txt");
     std::cout<<"debug file path:"<<qDebugfilePath.toStdString().c_str()<<std::endl;
@@ -61,12 +61,13 @@ bool Break_Detection::dofunc(const QString & func_name, const V3DPluginArgList &
         QString swcfile = infiles[0];
         QString outfile = outfiles[0];
         NeuronTree nt = readSWC_file(swcfile);
-        QList<NeuronSWC> newtree;
         double disthre=0;
         int k=0;
         disthre = (inparas.size()>=k+1) ? atof(inparas[0]) : 0;
-        connect_swc(nt, disthre);
-        writeSWC_file(outfile, nt);
+        QStringList swcinfo;
+        connect_swc(nt, disthre, swcinfo);
+       
+        writeSWC_file(outfile, nt, &swcinfo);
         qDebug()<<"--------------------------end func--------------------------------------------------------";
 
 	}

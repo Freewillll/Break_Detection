@@ -11,8 +11,8 @@ QHash<V3DLONG, V3DLONG> getUniqueLUT(QList<NeuronSWC> &neurons, QHash<V3DLONG, N
 double computeDist2(const NeuronSWC & s1, const NeuronSWC & s2);
 bool combine_linker(std::vector<QList<NeuronSWC> > & linker, QList<NeuronSWC> & combined);
 QList<V3DLONG> DFS(QVector< QVector<V3DLONG> > neighbors, V3DLONG newrootid, V3DLONG siz);
-void connect_swc(NeuronTree nt, QList<NeuronSWC>& newNeuron, double disThr);
-bool connect_swc(NeuronTree& nt, double disthre);
+void connect_swc(NeuronTree nt, QList<NeuronSWC>& newNeuron, double disThr, QStringList& swcinfo);
+bool connect_swc(NeuronTree& nt, double disthre, QStringList& swcinfo);
 NeuronTree pruneswc(NeuronTree nt, double length);
 
 #endif // HELP_FUNC_H
