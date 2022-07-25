@@ -3,7 +3,8 @@ TEMPLATE	= lib
 CONFIG	+= qt plugin warn_off
 QMAKE_CXXFLAGS += -std=c++0x
 #CONFIG	+= x86_64
-VAA3DPATH = /home/freewill/Vaa3d/v3d_external
+win32:VAA3DPATH = D:\Vaa3d\v3d_external
+unix:!macx:VAA3DPATH = /home/freewill/Vaa3d/v3d_external
 INCLUDEPATH	+= $$VAA3DPATH/v3d_main/basic_c_fun
 
 

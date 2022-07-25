@@ -548,6 +548,11 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
         }
     }
 
+    for (int i=0; i<nt.listNeuron.size(); ++i){
+        int curcompid = components.at(i);
+        nt.listNeuron[i].type = curcompid + 10;
+    }
+
     qDebug()<<"tips searching";
     std::vector< std::pair<int,int> > tip_pair;
     //get tips
@@ -578,10 +583,11 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
     std::multimap<double, QVector<V3DLONG> > connMap;
     for(V3DLONG tid=0; tid<cand.size(); tid++){
         V3DLONG tidx=cand.at(tid);         // tip index
-        V3DLONG mvid=-1, mtid=-1;
+        V3DLONG mtid=-1;
         for(V3DLONG cid=0; cid<curid; cid++){
-            if(cid==components.at(cand[tid])) continue;
+            if(cid==components.at(cand[tid])) continue;    //  cur component id
             double mtdis=disThr;
+            double mdis = MAX_INT;  // dist to other component
             V3DLONG id=components.indexOf(cid);
             while(id>=0){               // all index where component[index] == cid
 
@@ -590,15 +596,26 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
                     mtdis=dis;
                     mtid=id;
                 }
+
+                if (dis < mdis){
+                    mdis = dis;
+                }
+
                 id=components.indexOf(cid, id+1);
             }
+
+            int compid = components.at(cand[tid]);
+            swcinfo<<QString("min dist of component %1  to  component %2 --- %3").arg(compid).arg(cid).arg(mdis);
 
             if(mtid>=0){                // find tmp connect
                 QVector<V3DLONG> tmp;
                 tmp.append(tidx); tmp.append(mtid);
                 connMap.insert(std::pair<double, QVector<V3DLONG> >(mtdis,tmp));
+
             }
+
         }
+
     }
     qDebug()<<"-----------debug-----------nums of temp connections"<<connMap.size();
     swcinfo<<QString("nums of temp connections %1").arg(connMap.size());
@@ -607,9 +624,11 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
     qDebug()<<"connecting tips";
     //find the best solution for connecting tips
     QMap<V3DLONG, QVector<V3DLONG> > connectpairs;
+    int nums_connect = 0;
     for(std::multimap<double, QVector<V3DLONG> >::iterator iter=connMap.begin(); iter!=connMap.end(); iter++){
         if(components.at(iter->second.at(0))==components.at(iter->second.at(1))) //already connected
             continue;
+        ++nums_connect;
         if(connectpairs.contains(iter->second.at(0))){
             connectpairs[iter->second.at(0)].append(iter->second.at(1));
         }else{
@@ -631,6 +650,8 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
         }
     }
 
+    swcinfo<<QString("nums of new connections %1").arg(nums_connect);
+
     qDebug()<<"reconstruct neuron tree";
     //reconstruct tree
     QVector<V3DLONG> newid(nt.listNeuron.size(), -1);
@@ -638,10 +659,12 @@ void connect_swc(NeuronTree nt,QList<NeuronSWC>& newNeuron, double disThr, QStri
     curid=1;
     QVector<V3DLONG> prinode;
     for(V3DLONG i=0; i<nt.listNeuron.size(); i++){
-        if(nt.listNeuron[i].parent==-1){
-            prinode.push_back(i);          // root index
-        }
+        if(nt.listNeuron[i].parent==-1)
+                prinode.push_back(i);          // root index
+
     }
+
+
     V3DLONG i=0;
     V3DLONG priIdx=0;
     while(1){
